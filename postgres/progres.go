@@ -8,9 +8,9 @@ import (
 )
 
 // NewDBConn : orm conn
-func NewDBConn() (*gorm.DB, error) {
+func NewDBConn(authCfg *configs.AuthConfig) (*gorm.DB, error) {
 	// db connection
-	dbConn, err := gorm.Open("postgres", DefaultGetDSNHandler())
+	dbConn, err := gorm.Open("postgres", DefaultGetDSNHandler(authCfg))
 	if err != nil {
 		err = fmt.Errorf("gorm.Open db connection fail : %v", err)
 		return nil, err
@@ -21,10 +21,7 @@ func NewDBConn() (*gorm.DB, error) {
 // DefaultGetDSNHandler : dsn = "host=myhost port=myport user=gorm dbname=gorm password=mypassword"
 // DefaultGetDSNHandler : dsn = "postgresql://[user[:password]@][netloc][:port][,...][/dbname][?param1=value1&...]"
 // https://www.postgresql.org/docs/11/libpq-connect.html#LIBPQ-CONNSTRING
-var DefaultGetDSNHandler = func() string {
-	// config
-	cfg := configs.GetAuthConfigHandler()
-
+var DefaultGetDSNHandler = func(cfg *configs.AuthConfig) string {
 	var dsn string
 
 	//dsn += "host=" + cfg.Host + " "

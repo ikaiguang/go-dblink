@@ -8,9 +8,9 @@ import (
 )
 
 // NewDBConn : orm conn
-func NewDBConn() (*gorm.DB, error) {
+func NewDBConn(authCfg *configs.AuthConfig) (*gorm.DB, error) {
 	// db connection
-	dbConn, err := gorm.Open("mysql", DefaultGetDSNHandler())
+	dbConn, err := gorm.Open("mysql", DefaultGetDSNHandler(authCfg))
 	if err != nil {
 		err = fmt.Errorf("gorm.Open db connection fail : %v", err)
 		return nil, err
@@ -21,10 +21,7 @@ func NewDBConn() (*gorm.DB, error) {
 // DefaultGetDSNHandler : dsn = "root:Mysql.123456@tcp(127.0.0.1:3306)/test?charset=utf8&loc=Local"
 // github.com/go-sql-driver/mysql
 // mysql.Config{}.FormatDSN()
-var DefaultGetDSNHandler = func() string {
-	// config
-	cfg := configs.GetAuthConfigHandler()
-
+var DefaultGetDSNHandler = func(cfg *configs.AuthConfig) string {
 	var dsn string
 
 	dsn += cfg.Username + ":" + cfg.Password

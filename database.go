@@ -3,19 +3,44 @@ package dblink
 import (
 	"fmt"
 	"github.com/ikaiguang/go-dblink/config"
+	"github.com/ikaiguang/go-dblink/mysql"
+	"github.com/ikaiguang/go-dblink/postgres"
 	"github.com/jinzhu/gorm"
 	"strings"
 )
 
-// ConnHandler new db connection func
-type ConnHandler func() (*gorm.DB, error)
+// database driver
+const (
+	DriverMysql    = "mysql"    // mysql
+	DriverPostgres = "postgres" // postgres
+)
 
-// NewDBConn : orm conn
-func NewDBConn(f ConnHandler) *gorm.DB {
-	dbConn, err := f()
+// NewDBConn : db conn
+func NewDBConn() *gorm.DB {
+	var dbConn *gorm.DB
+	var err error
+
+	// auth config
+	authCfg := configs.GetAuthConfigHandler()
+
+	// open db connection
+	switch authCfg.Driver {
+	case DriverMysql:
+		// mysql
+		dbConn, err = mysql.NewDBConn(authCfg)
+
+	case DriverPostgres:
+		// postgres
+		dbConn, err = postgres.NewDBConn(authCfg)
+
+	default:
+		panic(fmt.Errorf("invalid database driver"))
+	}
+	// db connection error
 	if err != nil {
 		panic(fmt.Errorf("dblink new connection error : %v", err))
 	}
+
 	// ping
 	if err := dbConn.DB().Ping(); err != nil {
 		panic(fmt.Errorf("ping database connection fail : %v", err))
@@ -25,23 +50,23 @@ func NewDBConn(f ConnHandler) *gorm.DB {
 
 // SetDBConnOptions set dbConn options
 func SetDBConnOptions(dbConn *gorm.DB) *gorm.DB {
-	// database config
-	cfg := configs.GetOptionConfigHandler()
+	// option config
+	optionCfg := configs.GetOptionConfigHandler()
 
 	// set table prefix
 	SetTablePrefix()
 
 	// set max open conn
-	SetMaxOpenConn(dbConn, cfg)
+	SetMaxOpenConn(dbConn, optionCfg)
 
 	// set max idle conn
-	SetMaxIdleConn(dbConn, cfg)
+	SetMaxIdleConn(dbConn, optionCfg)
 
 	// set conn max lifetime
-	SetConnMaxLifetime(dbConn, cfg)
+	SetConnMaxLifetime(dbConn, optionCfg)
 
 	// debug
-	return SetOrmDebug(dbConn, cfg)
+	return SetOrmDebug(dbConn, optionCfg)
 }
 
 // SetTablePrefix : set table prefix

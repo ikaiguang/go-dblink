@@ -10,6 +10,7 @@ import (
 
 // AuthConfig auth cfg
 type AuthConfig struct {
+	Driver     string // os.Setenv("DatabaseDriver", "mysql")
 	Username   string // os.Setenv("DatabaseUsername", "username")
 	Password   string // os.Setenv("DatabasePassword", "password")
 	Host       string // os.Setenv("DatabaseHost", "127.0.0.1")
@@ -22,6 +23,7 @@ type AuthConfig struct {
 var GetAuthConfigHandler = func() *AuthConfig {
 	var cfg AuthConfig
 
+	cfg.Driver = strings.TrimSpace(os.Getenv("DatabaseDriver"))
 	cfg.Username = strings.TrimSpace(os.Getenv("DatabaseUsername"))
 	cfg.Password = strings.TrimSpace(os.Getenv("DatabasePassword"))
 	cfg.Host = strings.TrimSpace(os.Getenv("DatabaseHost"))
