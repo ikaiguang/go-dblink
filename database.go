@@ -69,17 +69,23 @@ func SetDBConnOptions(dbConn *gorm.DB) *gorm.DB {
 	return SetOrmDebug(dbConn, optionCfg)
 }
 
+// TablePrefix table prefix
+func TablePrefix() string {
+	return configs.GetTablePrefixHandler()
+}
+
 // SetTablePrefix : set table prefix
 func SetTablePrefix() {
+	tablePrefix := TablePrefix()
 	// empty
-	if len(configs.TablePrefix) == 0 {
+	if len(tablePrefix) == 0 {
 		return
 	}
 
 	// rewrite handler
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, tableName string) string {
-		if !strings.HasPrefix(tableName, configs.TablePrefix) {
-			return configs.TablePrefix + tableName
+		if !strings.HasPrefix(tableName, tablePrefix) {
+			return tablePrefix + tableName
 		}
 		return tableName
 	}

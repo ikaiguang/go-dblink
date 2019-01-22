@@ -34,8 +34,13 @@ var GetAuthConfigHandler = func() *AuthConfig {
 	return &cfg
 }
 
-// TablePrefix : database table prefix
-var TablePrefix = strings.TrimSpace(os.Getenv("DatabaseTablePrefix"))
+// tablePrefix : database table prefix
+var tablePrefix = strings.TrimSpace(os.Getenv("DatabaseTablePrefix"))
+
+// GetTablePrefixHandler get table prefix
+var GetTablePrefixHandler = func() string {
+	return tablePrefix
+}
 
 // OptionConfig option cfg
 type OptionConfig struct {
@@ -65,7 +70,7 @@ var GetOptionConfigHandler = func() *OptionConfig {
 	cfg.Debug = strings.ToLower(debugString) == "true"
 
 	// prefix
-	cfg.Prefix = TablePrefix
+	cfg.Prefix = GetTablePrefixHandler()
 
 	// max open
 	openString := strings.TrimSpace(os.Getenv("DatabaseMaxOpenConn"))
