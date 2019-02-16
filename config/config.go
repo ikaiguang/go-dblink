@@ -67,7 +67,8 @@ var GetOptionConfigHandler = func() *OptionConfig {
 
 	// debug
 	debugString := strings.TrimSpace(os.Getenv("DatabaseOrmDebug"))
-	cfg.Debug = strings.ToLower(debugString) == "true"
+	//cfg.Debug = strings.ToLower(debugString) == "true"
+	cfg.Debug, _ = strconv.ParseBool(debugString)
 
 	// prefix
 	cfg.Prefix = GetTablePrefixHandler()
